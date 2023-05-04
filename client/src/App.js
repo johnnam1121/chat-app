@@ -4,6 +4,8 @@ import { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from "./components/pages/Login";
 import Chat from "./components/pages/Chat";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import DarkModeToggle from './components/DarkModeToggle';
 
 const socket = io('http://localhost:3001')
 
