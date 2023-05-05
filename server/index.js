@@ -25,7 +25,7 @@ io.on("connection", (socket) => {
   // when user joins room with name and room
   socket.on("JoinedRoom", (data) => {
     socket.join(data.room);
-    //console.log(`${data.name} with ID: ${socket.id} joined room: ${data.room}`);
+    console.log(`${data.name} with ID: ${socket.id} joined room: ${data.room}`);
   });
 
   // when newMessage is emitted

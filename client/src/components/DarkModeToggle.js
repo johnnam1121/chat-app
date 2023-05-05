@@ -24,7 +24,7 @@ function DarkModeToggle({ darkMode, setDarkMode, modeColor }) {
         )}
       </IconButton>
 
-      <style jsx>{`
+      <style>{`
         ::-webkit-scrollbar {
           background-color: ${scrollbarBackground};
           width: 10px;

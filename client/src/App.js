@@ -1,11 +1,9 @@
-import "./App.css";
-import { io } from "socket.io-client";
 import { useState } from "react";
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Login from "./components/pages/Login";
-import Chat from "./components/pages/Chat";
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import DarkModeToggle from './components/DarkModeToggle';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { io } from "socket.io-client";
+import "./App.css";
+import Chat from "./components/pages/ChatPage";
+import Login from "./components/pages/LoginPage";
 
 const socket = io('http://localhost:3001')
 
