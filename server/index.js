@@ -13,14 +13,19 @@ const server = http.createServer(app);
 // add cors to accept requests from localhost:3000
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "https://johnnam1121.github.io/chat-app/",
     methods: ["GET", "POST"],
   },
 });
 
+app.get('https://chat-app-production-5c4c.up.railway.app/', (req, res) => {
+  res.send('Johns server is running properly')
+})
+
 server.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);
 });
+
 
 // Create a map to store active users for each room
 const activeUsersMap = new Map();
