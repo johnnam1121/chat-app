@@ -1,28 +1,29 @@
-import { Box, Button, Grid, Paper, TextField, Typography, useMediaQuery } from '@mui/material';
+import { Box, Grid, Paper, Typography } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import ActiveUsers from '../ActiveUsers';
 import DarkModeToggle from '../DarkModeToggle';
+import MessageBox from '../MessageBox';
+import TextInput from '../TextInput';
 
 export default function ChatPage({ socket, name, room }) {
-  const isMobile = useMediaQuery("(max-width: 650px)");
   const [message, setMessage] = useState('')
   const [messageList, setMessageList] = useState([]);
   const [darkMode, setDarkMode] = useState(false);
-  const boxRef = useRef(null);
-
-  useEffect(() => {
-    // Scroll to the bottom of the container when new messages arrive
-    const box = boxRef.current;
-    box.scrollTop = box.scrollHeight;
-  }, [messageList]);
+  const [activeUsers, setActiveUsers] = useState([]);
+  const navigate = useNavigate();
 
   const theme = createTheme({
     palette: {
       primary: {
         main: darkMode ? '#222831' : '#EEF1FF',
+        light: darkMode ? '#0C7D85' : '#AAC4FF',
       },
       secondary: {
-        main: darkMode ? '#EEEEEE' : '#AAC4FF',
+        main: darkMode ? '#222831' : '#D2DAFF',
+        light: darkMode ? '#0C7D85' : '#B1B2FF',
+
       },
       mode: darkMode ? 'dark' : 'light'
     },
@@ -44,40 +45,32 @@ export default function ChatPage({ socket, name, room }) {
       },
       h5: {
         color: darkMode ? '#EEEEEE' : '#8CC0DE',
-        // fontSize: '3vh',
-        // '@media (max-width: 768px)': {
-        //   fontSize: '3vw',
-        // },
       },
       h6: {
         color: darkMode ? '#EEEEEE' : '#8CC0DE',
-        // fontSize: '3vh',
-        // '@media (max-width: 768px)': {
-        //   fontSize: '3vw',
-        // },
       },
       body1: {
-        color: darkMode ? '#EEEEEE' : '#AAC4FF',
+        color: darkMode ? '#CCCCCC' : '#393E46',
         fontSize: '3vh',
-        // '@media (max-width: 768px)': {
-        //   fontSize: '3vw',
-        // },
       },
       body2: {
         color: darkMode ? '#EEEEEE' : '#AAC4FF',
-        fontSize: '1.3vh',
-        // '@media (max-width: 768px)': {
-        //   fontSize: '3vw',
-        // },
+        fontSize: '1.5vh',
       },
     },
-
   });
 
   const modeColor = {
     lightModeColor: '#EEEEEE',
     darkModeColor: '#393E46',
   };
+
+  // make sure user logs in first before being able to access chat page
+  useEffect(() => {
+    if (name == '') {
+      navigate('/')
+    }
+  }, [name]);
 
   // send message function used to send the message with some information
   const sendMessage = async () => {
@@ -95,6 +88,51 @@ export default function ChatPage({ socket, name, room }) {
     }
   }
 
+  // handle disconnect message when user leaves
+  useEffect(() => {
+    const handleDisconnectMessage = async (disconnectUser) => {
+      if (disconnectUser !== '') {
+        const messageData = {
+          name: 'Chat-bot',
+          room: room,
+          message: `${disconnectUser} has left the chat.`,
+          time: new Date(Date.now()).getHours() + ":" + new Date(Date.now()).getMinutes()
+        }
+        setMessageList((list) => [...list, messageData]); // adds new message content to message list
+        setMessage(''); // resets the value to an empty string after sending the message  
+      }
+    };
+    socket.on("userDisconnected", handleDisconnectMessage);
+
+    // Clean up the event listener when the component is unmounted
+    return () => {
+      socket.off("userDisconnected", handleDisconnectMessage);
+    };
+  }, [socket]);
+
+  // handle connect message when user joins
+  useEffect(() => {
+    const handleConnectionMessage = async (data) => {
+      if (data !== '') {
+        const messageData = {
+          name: 'Chat-bot',
+          room: data.room,
+          message: `${data.name} has joined the chat!`,
+          time: new Date(Date.now()).getHours() + ":" + new Date(Date.now()).getMinutes()
+        }
+        setMessageList((list) => [...list, messageData]); // adds new message content to message list
+        setMessage(''); // resets the value to an empty string after sending the message  
+      }
+    };
+    socket.on("newConnection", handleConnectionMessage);
+
+    // Clean up the event listener when the component is unmounted
+    return () => {
+      socket.off("newConnection", handleConnectionMessage);
+    };
+  }, [socket]);
+
+
   // when displayMessage is emitted from backend, useEffect is called
   useEffect(() => {
     // set the message list
@@ -108,62 +146,55 @@ export default function ChatPage({ socket, name, room }) {
     };
   }, [socket]);
 
-  const containerStyle = { height: '100vh', display: 'flex' };
-  const button = { color: theme.palette.secondary.main, borderColor: theme.palette.secondary.main };
+  // handles activeusers
+  useEffect(() => {
+    // Update the active users list when it is received from the server
+    const handleUpdateActiveUsers = (activeUsers) => {
+      setActiveUsers(activeUsers);
+    };
+    socket.on("updateActiveUsers", handleUpdateActiveUsers);
+
+    // Clean up the event listener when the component is unmounted
+    return () => {
+      socket.off("updateActiveUsers", handleUpdateActiveUsers);
+    };
+  }, [socket]);
+
+  const containerStyle = { height: '100vh', display: 'flex', flexGrow: 1 };
+  const paperStyles = {
+    border: '1px',
+    borderStyle: 'solid',
+    borderColor: theme.palette.secondary.light,
+    backgroundColor: theme.palette.primary.main,
+    marginRight: '1vw',
+    marginTop: '1vh'
+  }
 
   return (
     <ThemeProvider theme={theme}>
       <Paper sx={{ bgcolor: theme.palette.primary.main, minHeight: "100vh" }}>
-        <Box sx={{ flexGrow: 1, zIndex: '2', height: '100vh', display: 'flex', flexDirection: 'column' }}>
-          <Grid container sx={containerStyle} style={{ flexGrow: 1 }}>
-            <Grid item xs={12} sm={12} sx={{ ml: '1vh', height: '10vh' }}>
-              <Typography variant="h1" style={{ display: "flex", justifyContent: "space-between" }}>
-                <div>Current Chat Room: {room}</div>
-                <div><DarkModeToggle darkMode={darkMode} setDarkMode={setDarkMode} modeColor={modeColor} /></div>
-              </Typography>
-            </Grid>
-            <Grid item xs={0} sm={3} style={{ height: '75vh' }}>
-              {isMobile ? null : (
-                <Typography variant="h2" sx={{ textAlign: "center" }}>
-                  Active Users
-                  {name}
+        <Box sx={{ flexGrow: 1, zIndex: '2', display: 'flex', flexDirection: 'column' }}>
+          <Grid container sx={containerStyle}>
+            <Grid item xs={12} md={12} sx={{ ml: '1vw', height: '10vh' }}>
+              <Paper sx={paperStyles}>
+                <Typography variant="h1" sx={{ display: "flex", justifyContent: "space-between" }}>
+                  <div>Hi {name}!</div>
+                  <div><DarkModeToggle darkMode={darkMode} setDarkMode={setDarkMode} modeColor={modeColor} /></div>
                 </Typography>
-              )}
+                <Typography variant="h1" sx={{ display: "flex", justifyContent: "space-between" }}>
+                  <div>Current Chat Room: {room}</div>
+                </Typography>
+              </Paper>
             </Grid>
-            <Grid item xs={12} sm={9} style={{ height: '75vh' }}>
-              <Box ref={boxRef} sx={{ maxHeight: '70vh', overflow: 'auto' }}>
-                {messageList.map((message, index) => {
-                  const id = name === message.name ? "you" : "other";
-                  return (
-                    <div key={index} id={id}>
-                      <div style={{ textAlign: id === "you" ? "right" : "left" }}>
-                        <Typography variant='body1' sx={{ bgcolor: 'pink' }}>{message.message}</Typography>
-                        <Typography variant='body2'>{message.time} {message.name}</Typography>
-                      </div>
-                    </div>
-                  )
-                })}
-              </Box>
+            <Grid item xs={12} md={3}>
+              <ActiveUsers theme={theme} activeUsers={activeUsers} />
             </Grid>
-            <Grid item xs={3} sm={3}></Grid>
-            <Grid item xs={12} sm={9} style={{ height: "10vh" }}>
-              <Box sx={{ p: 2, display: "flex", alignItems: "center" }}>
-                <TextField
-                  placeholder="Enter your message"
-                  value={message}
-                  onChange={(event) => setMessage(event.target.value)}
-                  onKeyDown={(event) => event.key === "Enter" && sendMessage()}
-                  fullWidth
-                  multiline
-                  rows={1}
-                  variant="outlined"
-                  size="small"
-                  sx={{ flexGrow: 1, mr: 1 }} // Adjust the margin to create space between the TextField and Button
-                />
-                <Button variant="contained" color="primary" onClick={sendMessage}>
-                  Send
-                </Button>
-              </Box>
+            <Grid item xs={12} md={9}>
+              <MessageBox socket={socket} name={name} room={room} message={message} messageList={messageList} theme={theme} />
+            </Grid>
+            <Grid item xs={3} md={3}></Grid>
+            <Grid item xs={12} md={9} sx={{ height: "10vh" }}>
+              <TextInput message={message} sendMessage={sendMessage} setMessage={setMessage} theme={theme} />
             </Grid>
           </Grid>
         </Box>

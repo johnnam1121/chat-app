@@ -1,29 +1,36 @@
 import { Box, Button, TextField, Typography } from '@mui/material';
-import React from 'react';
+import React, { useEffect } from 'react';
 
-function Login({ setName, setRoom, joinRoom, theme }) {
+export default function Login({ setName, setRoom, joinRoom, theme }) {
   const roomOptions = [
     {
       value: 'blank',
       label: '',
     },
     {
-      value: 'Option 1',
-      label: 'Option 1',
+      value: 'Namily',
+      label: 'Namily',
     },
     {
-      value: 'Option 2',
-      label: 'Option 2',
+      value: 'Spring Woods',
+      label: 'Spring Woods',
     },
     {
-      value: 'Option 3',
-      label: 'Option 3',
+      value: 'LPhiE',
+      label: 'LPhiE',
     },
     {
-      value: 'Option 4',
-      label: 'Option 4',
+      value: 'SIS',
+      label: 'SIS',
     },
   ];
+
+  // resets the name and room
+  useEffect(() => {
+    setName('');
+    setRoom('');
+  }, [setName, setRoom]);
+
 
   const button = { textAlign: 'center', alignItems: 'center', color: theme.palette.secondary.main, borderColor: theme.palette.secondary.main };
 
@@ -69,5 +76,3 @@ function Login({ setName, setRoom, joinRoom, theme }) {
     </Box>
   )
 }
-
-export default Login

@@ -8,6 +8,7 @@ import Login from '../Login';
 
 export default function LoginPage({ socket, name, setName, room, setRoom }) {
   const [darkMode, setDarkMode] = useState(false);
+  
   const theme = createTheme({
     palette: {
       primary: {

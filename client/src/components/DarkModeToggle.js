@@ -1,7 +1,7 @@
-import React from 'react';
-import { IconButton } from '@mui/material';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
+import { IconButton } from '@mui/material';
+import React from 'react';
 
 function DarkModeToggle({ darkMode, setDarkMode, modeColor }) {
   const handleToggle = () => {
@@ -10,9 +10,9 @@ function DarkModeToggle({ darkMode, setDarkMode, modeColor }) {
 
   const { lightModeColor, darkModeColor } = modeColor;
 
-  const scrollbarBackground = darkMode ? '#000000' : '#ffffff';
-  const scrollbarTrackShadow = darkMode ? '#000000' : '#ffffff';
-  const scrollbarThumbShadow = darkMode ? '#000000' : '#ffffff';
+  const scrollbarBackground = darkMode ? '#eeeeee' : '#EEF1FF';
+  const scrollbarTrackShadow = darkMode ? '#0C7D85' : '#AAC4FF';
+  const scrollbarThumbShadow = darkMode ? '#222831' : '#B1B2FF';
 
   return (
     <div>
