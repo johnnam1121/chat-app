@@ -18,7 +18,7 @@ const io = new Server(server, {
   },
 });
 
-app.get('https://chat-app-production-5c4c.up.railway.app/', (req, res) => {
+app.get('/', (req, res) => {
   res.send('Johns server is running properly')
 })
 
