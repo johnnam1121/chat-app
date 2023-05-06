@@ -18,6 +18,11 @@ const io = new Server(server, {
   },
 });
 
+app.use(cors({
+  origin: "https://johnnam1121.github.io/chat-app/",
+  methods: ["GET", "POST"],
+}));
+
 app.get('/', (req, res) => {
   res.send('Johns server is running properly')
 })
