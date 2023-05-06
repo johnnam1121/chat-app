@@ -6,7 +6,7 @@ const { Server } = require("socket.io");
 app.use(cors());
 
 // does the port matter?? Been having problems with multiple connections
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 const server = http.createServer(app);
 
