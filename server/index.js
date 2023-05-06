@@ -13,13 +13,13 @@ const server = http.createServer(app);
 // add cors to accept requests from localhost:3000
 const io = new Server(server, {
   cors: {
-    origin: "https://johnnam1121.github.io/chat-app/",
+    origin: "https://johnnam1121.github.io",
     methods: ["GET", "POST"],
   },
 });
 
 app.use(cors({
-  origin: "https://johnnam1121.github.io/chat-app/",
+  origin: "https://johnnam1121.github.io",
   methods: ["GET", "POST"],
 }));
 
