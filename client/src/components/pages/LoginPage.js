@@ -20,7 +20,6 @@ export default function LoginPage({ socket, name, setName, room, setRoom }) {
       mode: darkMode ? 'dark' : 'light'
     },
     typography: {
-      fontFamily: 'Quicksand',
       h1: {
         color: darkMode ? '#00ADB5' : '#B1B2FF',
         fontSize: '10vh',

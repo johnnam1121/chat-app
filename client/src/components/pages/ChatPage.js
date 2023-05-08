@@ -28,7 +28,6 @@ export default function ChatPage({ socket, name, room }) {
       mode: darkMode ? 'dark' : 'light'
     },
     typography: {
-      fontFamily: 'Quicksand',
       h1: {
         color: darkMode ? '#00ADB5' : '#B1B2FF',
         fontSize: '5vh',
